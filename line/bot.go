@@ -23,6 +23,14 @@ func New() *LINE {
 	return &LINE{Client: bot}
 }
 
+func (b *LINE) Training() {
+	user := os.Getenv("USER_ID")
+	_, err := b.Client.PushMessage(user, linebot.NewTextMessage("テスト")).Do()
+	if err != nil {
+		log.Printf("failed to send training: %e\n", err)
+	}
+}
+
 func (b *LINE) ReplyOtherType(token string) {
 	text := "テキスト以外のメッセージタイプには対応していません。"
 	res, err := b.Client.ReplyMessage(token, linebot.NewTextMessage(text)).Do()
