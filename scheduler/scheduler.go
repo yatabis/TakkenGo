@@ -31,7 +31,12 @@ func (s *Scheduler) Set() {
 	start = start.Add(-time.Duration(start.Second()) * time.Second)
 	start = start.Add(-time.Duration(start.Nanosecond()) * time.Nanosecond)
 
-	_, err := c.Every(1).Hour().From(start).Run(training)
+	_, err := c.Every(20).Minute().From(time.Now()).Run(ping)
+	if err != nil {
+		log.Printf("failed to set the ping task for scheduler: %e\n", err)
+	}
+
+	_, err = c.Every(1).Hour().From(start).Run(training)
 	if err != nil {
 		log.Printf("failed to set the training task for scheduler: %e\n", err)
 	}

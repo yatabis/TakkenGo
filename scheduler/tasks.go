@@ -1,10 +1,22 @@
 package scheduler
 
 import (
+	"log"
 	"time"
+
+	"gopkg.in/resty.v1"
 
 	"TakkenGo/line"
 )
+
+func ping() {
+	r, err := resty.R().Get("https://takken-go.herokuapp.com/")
+	if err == nil {
+		log.Printf("ping: %+v\n", r)
+	} else {
+		log.Printf("ping error: %e\n", err)
+	}
+}
 
 func training() {
 	bot := line.New()
