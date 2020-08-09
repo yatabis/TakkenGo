@@ -25,7 +25,7 @@ func New() *LINE {
 
 func (b *LINE) Training() {
 	user := os.Getenv("USER_ID")
-	_, err := b.Client.PushMessage(user, linebot.NewTextMessage("テスト")).Do()
+	_, err := b.Client.PushMessage(user, NewTrainingMessage()).Do()
 	if err != nil {
 		log.Printf("failed to send training: %e\n", err)
 	}
