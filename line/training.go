@@ -31,7 +31,7 @@ func NewTrainingMessage() *linebot.FlexMessage {
 	}
 
 	answer := TrainingButton("解答", "answer", linebot.FlexButtonStyleTypePrimary)
-	snooze := TrainingButton("解答", "answer", linebot.FlexButtonStyleTypeSecondary)
+	snooze := TrainingButton("延期", "snooze", linebot.FlexButtonStyleTypeSecondary)
 
 	footer := linebot.BoxComponent{
 		Type:     linebot.FlexComponentTypeBox,
