@@ -2,7 +2,6 @@ package scheduler
 
 import (
 	"log"
-	"os"
 	"sync"
 	"time"
 
@@ -15,12 +14,22 @@ type Scheduler struct {
 }
 
 func Init() *Scheduler {
+	time.Local = time.FixedZone("Asia/Tokyo", 9 * 60 * 60)
 	wg := new(sync.WaitGroup)
 	c := cron.NewCron(wg, cron.Option{})
+	s := &Scheduler{wg: wg, cron: c}
+	s.Set()
+	return s
+}
 
-	loc := time.FixedZone(os.Getenv("TZ"), 9 * 60 * 60)
-	now := time.Now()
-	start := time.Date(now.Year(), now.Month(), now.Day(), now.Hour() + 1, 0, 0, 0, loc)
+func (s *Scheduler) Set() {
+	c := s.cron
+
+	start := time.Now()
+	start = start.Add(1 * time.Hour)
+	start = start.Add(-time.Duration(start.Minute()) * time.Minute)
+	start = start.Add(-time.Duration(start.Second()) * time.Second)
+	start = start.Add(-time.Duration(start.Nanosecond()) * time.Nanosecond)
 
 	_, err := c.Every(1).Hour().From(start).Run(training)
 	if err != nil {
@@ -31,8 +40,6 @@ func Init() *Scheduler {
 	if err != nil {
 		log.Printf("failed to set the snooze task for scheduler: %e\n", err)
 	}
-
-	return &Scheduler{wg: wg, cron: c}
 }
 
 func (s *Scheduler) Close() {
