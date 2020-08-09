@@ -1,13 +1,16 @@
 package line
 
 import (
+	"strconv"
+	"time"
+
 	"github.com/line/line-bot-sdk-go/linebot"
 
 	"TakkenGo/database"
 )
 
 func NewTrainingMessage() *linebot.FlexMessage {
-	chapter, section := database.GetQuestions()
+	id, chapter, section := database.GetQuestions()
 	text := "【" + chapter + "】\n" + section
 
 	head := linebot.TextComponent{
@@ -30,8 +33,8 @@ func NewTrainingMessage() *linebot.FlexMessage {
 		Spacing:  linebot.FlexComponentSpacingTypeMd,
 	}
 
-	answer := TrainingButton("解答", "answer", linebot.FlexButtonStyleTypePrimary)
-	snooze := TrainingButton("延期", "snooze", linebot.FlexButtonStyleTypeSecondary)
+	answer := TrainingButton("解答", AnswerAction, id, linebot.FlexButtonStyleTypePrimary)
+	snooze := TrainingButton("延期", SnoozeAction, id, linebot.FlexButtonStyleTypeSecondary)
 
 	footer := linebot.BoxComponent{
 		Type:     linebot.FlexComponentTypeBox,
@@ -49,11 +52,14 @@ func NewTrainingMessage() *linebot.FlexMessage {
 	return linebot.NewFlexMessage(text, &message)
 }
 
-func TrainingButton(label, data string, style linebot.FlexButtonStyleType) *linebot.ButtonComponent {
-	action := linebot.NewPostbackAction(label, data, "", "")
+func TrainingButton(label string, action Action, id int, style linebot.FlexButtonStyleType) *linebot.ButtonComponent {
+	data := "action=" + string(action)
+	data += "&id=" + strconv.Itoa(id)
+	data += "&time=" + strconv.Itoa(time.Now().Hour())
+	postback := linebot.NewPostbackAction(label, data, "", "")
 	return &linebot.ButtonComponent{
 		Type: linebot.FlexComponentTypeButton,
-		Action: action,
+		Action: postback,
 		Height: linebot.FlexButtonHeightTypeSm,
 		Style: style,
 	}

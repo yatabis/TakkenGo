@@ -23,11 +23,11 @@ func closeDB(db *sql.DB) {
 	}
 }
 
-func GetQuestions() (chapter, section string) {
+func GetQuestions() (id int, chapter, section string) {
 	db := openDB()
 	defer closeDB(db)
-	row := db.QueryRow("select chapter, section from questions where id = (select (max(id) * random())::int from questions)")
-	err := row.Scan(&chapter, &section)
+	row := db.QueryRow("select id, chapter, section from questions where id = (select (max(id) * random())::int from questions)")
+	err := row.Scan(&id, &chapter, &section)
 	if err != nil {
 		fmt.Println(err)
 	}
