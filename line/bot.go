@@ -31,26 +31,26 @@ func (b *LINE) Training() {
 	}
 }
 
-func (b *LINE) ReplyOtherPostback(token string) {
-	log.Printf("received the other postback event.")
+func (b *LINE) ReplyOtherPostback(token, data string) {
+	log.Printf("received the other postback event: %s\n", data)
 	text := "不明なポストバックイベントを受け取りました。"
 	b.ReplyText(token, text)
 }
 
-func (b *LINE) ReplyOtherUser(token string) {
-	log.Printf("received messages from the other user.")
+func (b *LINE) ReplyOtherUser(token, user string) {
+	log.Printf("received messages from the other user: %s\n", user)
 	text := "ユーザー登録をすべての機能をお使いいただけます。\n\nなお、現在はユーザー登録を受け付けておりません。"
 	b.ReplyText(token, text)
 }
 
 func (b *LINE) ReplyOtherType(token string) {
-	log.Printf("received the other message.")
+	log.Printf("received the other message.\n")
 	text := "テキスト以外のメッセージタイプには対応していません。"
 	b.ReplyText(token, text)
 }
 
-func (b *LINE) ReplyOtherText(token string) {
-	log.Printf("received the other text message.")
+func (b *LINE) ReplyOtherText(token, mes string) {
+	log.Printf("received the other text message: %s\n", mes)
 	text := "テキストを受け取りました。\n解答を登録する場合は、解答する問題の「解答」ボタンを押してから点数を入力してください。"
 	b.ReplyText(token, text)
 }

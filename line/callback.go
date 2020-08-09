@@ -35,16 +35,16 @@ func Callback(c echo.Context) error {
 			case "snooze":
 				bot.ReplyText(token, "この機能は未実装です。")
 			default:
-				bot.ReplyOtherPostback(token)
+				bot.ReplyOtherPostback(token, event.Postback.Data)
 			}
 		case linebot.EventTypeMessage:
-			if event.Source.UserID != os.Getenv("USER_ID") {
-				bot.ReplyOtherUser(token)
+			if user := event.Source.UserID; user != os.Getenv("USER_ID") {
+				bot.ReplyOtherUser(token, user)
 				break
 			}
-			switch event.Message.(type) {
+			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
-				bot.ReplyOtherText(token)
+				bot.ReplyOtherText(token, message.Text)
 			default:
 				bot.ReplyOtherType(token)
 			}
