@@ -31,22 +31,33 @@ func (b *LINE) Training() {
 	}
 }
 
+func (b *LINE) ReplyOtherPostback(token string) {
+	log.Printf("received the other postback event.")
+	text := "不明なポストバックイベントを受け取りました。"
+	b.ReplyText(token, text)
+}
+
+func (b *LINE) ReplyOtherUser(token string) {
+	log.Printf("received messages from the other user.")
+	text := "ユーザー登録をすべての機能をお使いいただけます。\n\nなお、現在はユーザー登録を受け付けておりません。"
+	b.ReplyText(token, text)
+}
+
 func (b *LINE) ReplyOtherType(token string) {
+	log.Printf("received the other message.")
 	text := "テキスト以外のメッセージタイプには対応していません。"
-	res, err := b.Client.ReplyMessage(token, linebot.NewTextMessage(text)).Do()
-	if err == nil {
-		log.Printf("replied to other message type: %+v\n", res)
-	} else {
-		log.Printf("failed to replying to other message type: %e\n", err)
-	}
+	b.ReplyText(token, text)
 }
 
 func (b *LINE) ReplyOtherText(token string) {
+	log.Printf("received the other text message.")
 	text := "テキストを受け取りました。\n解答を登録する場合は、解答する問題の「解答」ボタンを押してから点数を入力してください。"
-	res, err := b.Client.ReplyMessage(token, linebot.NewTextMessage(text)).Do()
-	if err == nil {
-		log.Printf("replied to other text message: %+v\n", res)
-	} else {
-		log.Printf("failed to replying to other text message: %e\n", err)
+	b.ReplyText(token, text)
+}
+
+func (b *LINE) ReplyText(token, text string) {
+	_, err := b.Client.ReplyMessage(token, linebot.NewTextMessage(text)).Do()
+	if err != nil {
+		log.Printf("failed to reply text message: %e\n", err)
 	}
 }

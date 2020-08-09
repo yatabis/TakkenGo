@@ -3,6 +3,7 @@ package line
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/labstack/echo"
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -26,14 +27,29 @@ func Callback(c echo.Context) error {
 
 	for _, event := range events {
 		token := event.ReplyToken
-		if event.Type != linebot.EventTypeMessage {
-			break
-		}
-		switch event.Message.(type) {
-		case *linebot.TextMessage:
-			bot.ReplyOtherText(token)
+		switch event.Type {
+		case linebot.EventTypePostback:
+			switch event.Postback.Data {
+			case "answer":
+				bot.ReplyText(token, "指定された問題に解答して、点数を入力してください。\nshortcuts://run-shortcut?name=takken-go\n\nこの機能は未実装です。")
+			case "snooze":
+				bot.ReplyText(token, "この機能は未実装です。")
+			default:
+				bot.ReplyOtherPostback(token)
+			}
+		case linebot.EventTypeMessage:
+			if event.Source.UserID != os.Getenv("USER_ID") {
+				bot.ReplyOtherUser(token)
+				break
+			}
+			switch event.Message.(type) {
+			case *linebot.TextMessage:
+				bot.ReplyOtherText(token)
+			default:
+				bot.ReplyOtherType(token)
+			}
 		default:
-			bot.ReplyOtherType(token)
+			break
 		}
 	}
 	return c.String(http.StatusOK, "OK")
