@@ -10,7 +10,7 @@ import (
 )
 
 func ping() {
-	r, err := resty.R().Get("https://takken-go.herokuapp.com/")
+	r, err := resty.R().Get("https://takken-go.herokuapp.com/ping")
 	if err == nil {
 		log.Printf("ping: %+v\n", r)
 	} else {
