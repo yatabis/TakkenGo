@@ -36,6 +36,11 @@ func (s *Scheduler) Set() {
 		log.Printf("failed to set the ping task for scheduler: %e\n", err)
 	}
 
+	_, err = c.Every(1).Day().At(4, 0, 0, 0).Run(reset)
+	if err != nil {
+		log.Printf("failed to set the reset task for scheduler: %e\n", err)
+	}
+
 	_, err = c.Every(1).Hour().From(start).Run(training)
 	if err != nil {
 		log.Printf("failed to set the training task for scheduler: %e\n", err)
