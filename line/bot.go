@@ -61,3 +61,10 @@ func (b *LINE) ReplyText(token, text string) {
 		log.Printf("failed to reply text message: %e\n", err)
 	}
 }
+
+func (b *LINE) ReplyMessages(token string, messages ...linebot.SendingMessage) {
+	_, err := b.Client.ReplyMessage(token, messages...).Do()
+	if err != nil {
+		log.Printf("failed to reply messages: %e\n", err)
+	}
+}

@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 
@@ -29,7 +28,18 @@ func GetQuestions() (id int, chapter, section string) {
 	row := db.QueryRow("select id, chapter, section from questions where id = (select (max(id) * random())::int from questions)")
 	err := row.Scan(&id, &chapter, &section)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+	}
+	return
+}
+
+func GetQuestionsById(id int) (chapter, section string) {
+	db := openDB()
+	defer closeDB(db)
+	row := db.QueryRow("select chapter, section from questions where id = $1", id)
+	err := row.Scan(&chapter, &section)
+	if err != nil {
+		log.Println(err)
 	}
 	return
 }

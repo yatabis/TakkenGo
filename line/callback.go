@@ -29,10 +29,12 @@ func Callback(c echo.Context) error {
 		token := event.ReplyToken
 		switch event.Type {
 		case linebot.EventTypePostback:
-			data := ParsePostback(event.Postback.Data)
+			data := ParsePostbackData(event.Postback.Data)
 			switch data.action {
 			case AnswerAction:
-				bot.ReplyText(token, "指定された問題に解答して、点数を入力してください。\nshortcuts://run-shortcut?name=takken-go\n\nこの機能は未実装です。")
+				text := linebot.NewTextMessage("指定された問題に解答して、点数を入力してください。\nshortcuts://run-shortcut?name=takken-go")
+				flex := NewAnswerMessage(data.questionId, data.time)
+				bot.ReplyMessages(token, text, flex)
 			case SnoozeAction:
 				bot.ReplyText(token, "この機能は未実装です。")
 			case ScoreAction:

@@ -20,7 +20,37 @@ type PostbackData struct {
 	score      int
 }
 
-func ParsePostback(postback string) (data PostbackData) {
+func NewPostbackData(action Action, questionId, time, score int) *PostbackData {
+	return &PostbackData{
+		action:     action,
+		questionId: questionId,
+		time:       time,
+		score:      score,
+	}
+}
+
+func (p *PostbackData) Unmarshal() (data string) {
+	if p.action == "" || p.questionId == 0 {
+		return
+	}
+	if p.action == ScoreAction && p.score == 0 {
+		return
+	}
+	data += "action=" + string(p.action) + "&id=" + strconv.Itoa(p.questionId)
+	if p.time >= 9 {
+		data += "&time=" + strconv.Itoa(p.time)
+	}
+	if p.action == ScoreAction {
+		if 10 <= p.score && p.score <= 100 && p.score % 10 == 0 {
+			data += "&score=" + strconv.Itoa(p.score)
+		} else {
+			return ""
+		}
+	}
+	return
+}
+
+func ParsePostbackData(postback string) (data PostbackData) {
 	query, err := url.ParseQuery(postback)
 	if err != nil {
 		return
