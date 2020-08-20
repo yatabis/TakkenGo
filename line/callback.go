@@ -39,7 +39,7 @@ func Callback(c echo.Context) error {
 				flex := NewAnswerMessage(data.questionId, data.time)
 				bot.ReplyMessages(token, text, flex)
 			case SnoozeAction:
-				bot.ReplyText(token, "この機能は未実装です。")
+				bot.ReplyText(token, "トレーニングを延期します。\nshortcuts://run-shortcut?name=takken-go/snooze")
 			case ScoreAction:
 				if err := database.SaveScore(data.questionId, data.time, data.score); err == nil {
 					bot.ReplyText(token, strconv.Itoa(data.time) + "時のスコアを保存しました。")
