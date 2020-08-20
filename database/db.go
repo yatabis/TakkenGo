@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+	"math/rand"
 	"os"
 	"strconv"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -24,18 +26,59 @@ func closeDB(db *sql.DB) {
 	}
 }
 
-func GetQuestions() (id int, chapter, section string) {
+func choiceLowest(list []float64) int {
+	n := len(list)
+	cum := make([]float64, n)
+	cum[0] = 100 - list[0]
+	for i := 1; i < n; i++ {
+		cum[i] = cum[i - 1] + 100 - list[i]
+	}
+	rand.Seed(time.Now().UnixNano())
+	max := cum[n - 1]
+	r := rand.Float64() * max
+	for i, c := range cum {
+		if c > r {
+			return i
+		}
+	}
+	return -1
+}
+
+func GetRatesList() (ratesList []float64) {
 	db := openDB()
 	defer closeDB(db)
-	row := db.QueryRow("select id, chapter, section from questions where id = (select (max(id) * random())::int from questions)")
-	err := row.Scan(&id, &chapter, &section)
+	rows, err := db.Query("select  rate from questions")
 	if err != nil {
 		log.Println(err)
+		return nil
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var rate float64
+		if err := rows.Scan(&rate); err != nil {
+			log.Println(err)
+			return nil
+		}
+		ratesList = append(ratesList, rate)
+	}
+	if err := rows.Err(); err != nil {
+		log.Println(err)
+		return nil
 	}
 	return
 }
 
-func GetQuestionsById(id int) (chapter, section string) {
+func GetQuestionByRate() (id int, chapter, section string) {
+	ratesList := GetRatesList()
+	if ratesList == nil {
+		return
+	}
+	id = choiceLowest(ratesList)
+	chapter, section = GetQuestionById(id)
+	return
+}
+
+func GetQuestionById(id int) (chapter, section string) {
 	db := openDB()
 	defer closeDB(db)
 	row := db.QueryRow("select chapter, section from questions where id = $1", id)

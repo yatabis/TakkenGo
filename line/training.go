@@ -108,7 +108,7 @@ func NewTrainingButton(label string, action Action, id int, style linebot.FlexBu
 }
 
 func NewTrainingMessage() *linebot.FlexMessage {
-	id, chapter, section := database.GetQuestions()
+	id, chapter, section := database.GetQuestionByRate()
 	text := "【" + chapter + "】\n" + section
 
 	head := linebot.TextComponent{
@@ -143,7 +143,7 @@ func NewTrainingMessage() *linebot.FlexMessage {
 }
 
 func NewAnswerMessage(id, time int) *linebot.FlexMessage {
-	chapter, section := database.GetQuestionsById(id)
+	chapter, section := database.GetQuestionById(id)
 	text := "【" + chapter + "】\n" + section
 	header := linebot.BoxComponent{
 		Type:            linebot.FlexComponentTypeBox,
