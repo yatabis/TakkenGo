@@ -4,9 +4,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/labstack/echo"
 	"github.com/line/line-bot-sdk-go/linebot"
+
+	"TakkenGo/database"
 )
 
 func Callback(c echo.Context) error {
@@ -38,7 +41,11 @@ func Callback(c echo.Context) error {
 			case SnoozeAction:
 				bot.ReplyText(token, "この機能は未実装です。")
 			case ScoreAction:
-				bot.ReplyText(token, "この機能は未実装です。")
+				if err := database.SaveScore(data.questionId, data.time, data.score); err == nil {
+					bot.ReplyText(token, strconv.Itoa(data.time) + "時のスコアを保存しました。")
+				} else {
+					bot.ReplyText(token, err.Error())
+				}
 			default:
 				bot.ReplyOtherPostback(token, event.Postback.Data)
 			}

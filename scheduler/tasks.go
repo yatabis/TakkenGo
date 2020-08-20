@@ -6,6 +6,7 @@ import (
 
 	"gopkg.in/resty.v1"
 
+	"TakkenGo/database"
 	"TakkenGo/line"
 )
 
@@ -16,6 +17,10 @@ func ping() {
 	} else {
 		log.Printf("ping error: %e\n", err)
 	}
+}
+
+func reset() {
+	database.ResetScores()
 }
 
 func training() {
