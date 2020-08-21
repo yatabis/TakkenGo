@@ -22,10 +22,20 @@ func main() {
 
 	e.GET("/ping", ping)
 	e.POST("/callback", line.Callback)
+	e.GET("/training", training)
+	e.GET("/snooze", snooze)
 
 	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }
 
 func ping(c echo.Context) error {
 	return c.String(http.StatusOK, "pong")
+}
+
+func training(c echo.Context) error {
+	return c.Redirect(http.StatusPermanentRedirect, "shortcuts://run-shortcut?name=takken-go")
+}
+
+func snooze(c echo.Context) error {
+	return c.Redirect(http.StatusPermanentRedirect, "shortcuts://run-shortcut?name=takken-go/snooze")
 }
