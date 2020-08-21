@@ -2,6 +2,7 @@ package line
 
 import (
 	"encoding/json"
+	"os"
 	"strconv"
 	"time"
 
@@ -123,8 +124,14 @@ func NewTrainingMessage() *linebot.FlexMessage {
 		Spacing:  linebot.FlexComponentSpacingTypeMd,
 	}
 
+	// TODO: あまり有効でない関数の使用 (NewTrainingButton)
 	answer := NewTrainingButton("解答", AnswerAction, id, linebot.FlexButtonStyleTypePrimary)
-	snooze := NewTrainingButton("延期", SnoozeAction, id, linebot.FlexButtonStyleTypeSecondary)
+	snooze := &linebot.ButtonComponent{
+		Type: linebot.FlexComponentTypeButton,
+		Action: linebot.NewURIAction("延期", os.Getenv("ORIGIN") + "/snooze"),
+		Height: linebot.FlexButtonHeightTypeSm,
+		Style: linebot.FlexButtonStyleTypeSecondary,
+	}
 
 	footer := linebot.BoxComponent{
 		Type:     linebot.FlexComponentTypeBox,

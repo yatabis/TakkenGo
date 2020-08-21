@@ -9,8 +9,9 @@ type Action string
 
 const (
 	AnswerAction Action = "answer"
-	SnoozeAction Action = "snooze"
 	ScoreAction  Action = "score"
+	// TODO: snooze ポストバックは使わない
+	SnoozeAction Action = "snooze"
 )
 
 type PostbackData struct {
