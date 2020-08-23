@@ -6,7 +6,6 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"strconv"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -130,9 +129,6 @@ func UpdateRate(id, score int) error {
 }
 
 func SaveScore(id, time, score int) error {
-	if GetScore(time) != 0 {
-		return errors.New(strconv.Itoa(time) + "時のスコアはすでに登録されています。")
-	}
 	if err := UpdateScore(time, score); err != nil {
 		return err
 	}
