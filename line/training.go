@@ -52,7 +52,7 @@ func (c *AnswerButton) MarshalJSON() ([]byte, error) {
 		BackgroundColor: c.color,
 		CornerRadius:    "md",
 		PaddingAll:      "md",
-		Action:          linebot.NewPostbackAction("", data, "", ""),
+		Action:          linebot.NewPostbackAction("", data, strconv.Itoa(c.score) + "点", ""),
 	})
 }
 
