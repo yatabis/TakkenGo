@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/line/line-bot-sdk-go/linebot"
 
-	"TakkenGo/database"
+	"github.com/yatabis/TakkenGo/database"
 )
 
 func Callback(c echo.Context) error {

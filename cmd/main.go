@@ -7,8 +7,8 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	"TakkenGo/line"
-	"TakkenGo/scheduler"
+	"github.com/yatabis/TakkenGo/line"
+	"github.com/yatabis/TakkenGo/scheduler"
 )
 
 func main() {

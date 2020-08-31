@@ -8,7 +8,7 @@ import (
 
 	"github.com/line/line-bot-sdk-go/linebot"
 
-	"TakkenGo/database"
+	"github.com/yatabis/TakkenGo/database"
 )
 
 type ButtonColor string

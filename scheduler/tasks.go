@@ -6,8 +6,8 @@ import (
 
 	"gopkg.in/resty.v1"
 
-	"TakkenGo/database"
-	"TakkenGo/line"
+	"github.com/yatabis/TakkenGo/database"
+	"github.com/yatabis/TakkenGo/line"
 )
 
 func ping() {
