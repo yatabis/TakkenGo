@@ -37,7 +37,7 @@ func choiceLowest(list []float64) int {
 	r := rand.Float64() * max
 	for i, c := range cum {
 		if c > r {
-			return i
+			return i + 1
 		}
 	}
 	return -1
@@ -46,7 +46,7 @@ func choiceLowest(list []float64) int {
 func GetRatesList() (ratesList []float64) {
 	db := openDB()
 	defer closeDB(db)
-	rows, err := db.Query("select  rate from questions")
+	rows, err := db.Query("select  rate from questions order by id")
 	if err != nil {
 		log.Println(err)
 		return nil
