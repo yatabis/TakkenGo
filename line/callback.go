@@ -52,16 +52,26 @@ func Callback(c echo.Context) error {
 		case linebot.EventTypeMessage:
 			if user := event.Source.UserID; user != os.Getenv("USER_ID") {
 				bot.ReplyOtherUser(token, user)
-				break
+				continue
 			}
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
+				isScore := false
+				for i := 10; i <= 100; i += 10 {
+					if message.Text == strconv.Itoa(i) + "点" {
+						isScore = true
+						break
+					}
+				}
+				if isScore {
+					continue
+				}
 				bot.ReplyOtherText(token, message.Text)
 			default:
 				bot.ReplyOtherType(token)
 			}
 		default:
-			break
+			continue
 		}
 	}
 	return c.String(http.StatusOK, "OK")
