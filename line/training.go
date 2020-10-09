@@ -31,10 +31,10 @@ type AnswerButton struct {
 
 func (c *AnswerButton) MarshalJSON() ([]byte, error) {
 	text := linebot.TextComponent{
-		Type:       linebot.FlexComponentTypeText,
-		Text:       strconv.Itoa(c.score) + "点",
-		Align:      linebot.FlexComponentAlignTypeCenter,
-		Gravity:    linebot.FlexComponentGravityTypeCenter,
+		Type:    linebot.FlexComponentTypeText,
+		Text:    strconv.Itoa(c.score) + "点",
+		Align:   linebot.FlexComponentAlignTypeCenter,
+		Gravity: linebot.FlexComponentGravityTypeCenter,
 	}
 	data := NewPostbackData(ScoreAction, c.id, c.time, c.score).Unmarshal()
 	return json.Marshal(&struct {
@@ -52,7 +52,7 @@ func (c *AnswerButton) MarshalJSON() ([]byte, error) {
 		BackgroundColor: c.color,
 		CornerRadius:    "md",
 		PaddingAll:      "md",
-		Action:          linebot.NewPostbackAction("", data, strconv.Itoa(c.score) + "点", ""),
+		Action:          linebot.NewPostbackAction("", data, strconv.Itoa(c.score)+"点", ""),
 	})
 }
 
@@ -68,13 +68,13 @@ func ButtonRow(row, id, time int) *linebot.BoxComponent {
 		ButtonColorPurple,
 	}
 	return &linebot.BoxComponent{
-		Type:            linebot.FlexComponentTypeBox,
-		Layout:          linebot.FlexBoxLayoutTypeHorizontal,
-		Contents:        []linebot.FlexComponent{
-			NewAnswerButton(id, time, 20 * row + 10, color[row]),
-			NewAnswerButton(id, time, 20 * row + 20, color[row + 1]),
+		Type:   linebot.FlexComponentTypeBox,
+		Layout: linebot.FlexBoxLayoutTypeHorizontal,
+		Contents: []linebot.FlexComponent{
+			NewAnswerButton(id, time, 20*row+10, color[row]),
+			NewAnswerButton(id, time, 20*row+20, color[row+1]),
 		},
-		Spacing:         linebot.FlexComponentSpacingTypeMd,
+		Spacing: linebot.FlexComponentSpacingTypeMd,
 	}
 }
 
@@ -89,11 +89,11 @@ func NewAnswerButton(id, time, score int, color ButtonColor) *AnswerButton {
 
 func NewQuestionText(text string) *linebot.TextComponent {
 	return &linebot.TextComponent{
-		Type:     linebot.FlexComponentTypeText,
-		Text:     text,
-		Size:     linebot.FlexTextSizeTypeLg,
-		Wrap:     true,
-		Weight:   linebot.FlexTextWeightTypeBold,
+		Type:   linebot.FlexComponentTypeText,
+		Text:   text,
+		Size:   linebot.FlexTextSizeTypeLg,
+		Wrap:   true,
+		Weight: linebot.FlexTextWeightTypeBold,
 	}
 }
 
@@ -101,36 +101,44 @@ func NewTrainingButton(label string, action Action, id int, style linebot.FlexBu
 	data := NewPostbackData(action, id, time.Now().Hour(), 0).Unmarshal()
 	postback := linebot.NewPostbackAction(label, data, "", "")
 	return &linebot.ButtonComponent{
-		Type: linebot.FlexComponentTypeButton,
+		Type:   linebot.FlexComponentTypeButton,
 		Action: postback,
 		Height: linebot.FlexButtonHeightTypeSm,
-		Style: style,
+		Style:  style,
 	}
 }
 
 func NewTrainingMessage() *linebot.FlexMessage {
-	id, chapter, section := database.GetQuestionByRate()
+	id, chapter, section, rate := database.GetQuestionByRate()
 	text := "【" + chapter + "】\n" + section
 
 	head := linebot.TextComponent{
-		Type:     linebot.FlexComponentTypeText,
-		Text:     "次の問題に解答してください。",
+		Type: linebot.FlexComponentTypeText,
+		Text: "次の問題に解答してください。",
+	}
+
+	rateText := linebot.TextComponent{
+		Type:   linebot.FlexComponentTypeText,
+		Text:   "（正答率：" + strconv.FormatFloat(rate, 'f', 1, 64) + "％）",
+		Size:   linebot.FlexTextSizeTypeMd,
+		Wrap:   true,
+		Weight: linebot.FlexTextWeightTypeBold,
 	}
 
 	body := linebot.BoxComponent{
 		Type:     linebot.FlexComponentTypeBox,
 		Layout:   linebot.FlexBoxLayoutTypeVertical,
-		Contents: []linebot.FlexComponent{&head, NewQuestionText(text)},
+		Contents: []linebot.FlexComponent{&head, NewQuestionText(text), &rateText},
 		Spacing:  linebot.FlexComponentSpacingTypeMd,
 	}
 
 	// TODO: あまり有効でない関数の使用 (NewTrainingButton)
 	answer := NewTrainingButton("解答", AnswerAction, id, linebot.FlexButtonStyleTypePrimary)
 	snooze := &linebot.ButtonComponent{
-		Type: linebot.FlexComponentTypeButton,
-		Action: linebot.NewURIAction("延期", os.Getenv("ORIGIN") + "/snooze"),
+		Type:   linebot.FlexComponentTypeButton,
+		Action: linebot.NewURIAction("延期", os.Getenv("ORIGIN")+"/snooze"),
 		Height: linebot.FlexButtonHeightTypeSm,
-		Style: linebot.FlexButtonStyleTypeSecondary,
+		Style:  linebot.FlexButtonStyleTypeSecondary,
 	}
 
 	footer := linebot.BoxComponent{
@@ -141,40 +149,40 @@ func NewTrainingMessage() *linebot.FlexMessage {
 	}
 
 	message := linebot.BubbleContainer{
-		Type:     linebot.FlexContainerTypeBubble,
-		Body:     &body,
-		Footer:   &footer,
+		Type:   linebot.FlexContainerTypeBubble,
+		Body:   &body,
+		Footer: &footer,
 	}
 
 	return linebot.NewFlexMessage(text, &message)
 }
 
 func NewAnswerMessage(id, time int) *linebot.FlexMessage {
-	chapter, section := database.GetQuestionById(id)
+	chapter, section, _ := database.GetQuestionById(id)
 	text := "【" + chapter + "】\n" + section
 	header := linebot.BoxComponent{
-		Type:            linebot.FlexComponentTypeBox,
-		Layout:          linebot.FlexBoxLayoutTypeVertical,
-		Contents:        []linebot.FlexComponent{NewQuestionText(text)},
+		Type:     linebot.FlexComponentTypeBox,
+		Layout:   linebot.FlexBoxLayoutTypeVertical,
+		Contents: []linebot.FlexComponent{NewQuestionText(text)},
 	}
 
 	body := linebot.BoxComponent{
-		Type:            linebot.FlexComponentTypeBox,
-		Layout:          linebot.FlexBoxLayoutTypeVertical,
-		Contents:        []linebot.FlexComponent{
+		Type:   linebot.FlexComponentTypeBox,
+		Layout: linebot.FlexBoxLayoutTypeVertical,
+		Contents: []linebot.FlexComponent{
 			ButtonRow(0, id, time),
 			ButtonRow(1, id, time),
 			ButtonRow(2, id, time),
 			ButtonRow(3, id, time),
 			ButtonRow(4, id, time),
 		},
-		Spacing:         linebot.FlexComponentSpacingTypeMd,
+		Spacing: linebot.FlexComponentSpacingTypeMd,
 	}
 
 	message := linebot.BubbleContainer{
-		Type:      linebot.FlexContainerTypeBubble,
-		Header:    &header,
-		Body:      &body,
+		Type:   linebot.FlexContainerTypeBubble,
+		Header: &header,
+		Body:   &body,
 	}
 	return linebot.NewFlexMessage("点数を入力", &message)
 }
