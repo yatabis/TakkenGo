@@ -30,10 +30,10 @@ func choiceLowest(list []float64) int {
 	cum := make([]float64, n)
 	cum[0] = 100 - list[0]
 	for i := 1; i < n; i++ {
-		cum[i] = cum[i - 1] + 100 - list[i]
+		cum[i] = cum[i-1] + 100 - list[i]
 	}
 	rand.Seed(time.Now().UnixNano())
-	max := cum[n - 1]
+	max := cum[n-1]
 	r := rand.Float64() * max
 	for i, c := range cum {
 		if c > r {
@@ -67,21 +67,21 @@ func GetRatesList() (ratesList []float64) {
 	return
 }
 
-func GetQuestionByRate() (id int, chapter, section string) {
+func GetQuestionByRate() (id int, chapter, section string, rate float64) {
 	ratesList := GetRatesList()
 	if ratesList == nil {
 		return
 	}
 	id = choiceLowest(ratesList)
-	chapter, section = GetQuestionById(id)
+	chapter, section, rate = GetQuestionById(id)
 	return
 }
 
-func GetQuestionById(id int) (chapter, section string) {
+func GetQuestionById(id int) (chapter, section string, rate float64) {
 	db := openDB()
 	defer closeDB(db)
-	row := db.QueryRow("select chapter, section from questions where id = $1", id)
-	err := row.Scan(&chapter, &section)
+	row := db.QueryRow("select chapter, section, rate from questions where id = $1", id)
+	err := row.Scan(&chapter, &section, &rate)
 	if err != nil {
 		log.Println(err)
 	}
@@ -119,8 +119,8 @@ func UpdateRate(id, score int) error {
 		log.Println(err)
 		return errors.New("スコアの保存に失敗しました。")
 	}
-	rate = (rate * count + float64(score)) / (count + 1)
-	_, err = db.Exec("update questions set rate = $1, count = $2 where id = $3", rate, count + 1, id)
+	rate = (rate*count + float64(score)) / (count + 1)
+	_, err = db.Exec("update questions set rate = $1, count = $2 where id = $3", rate, count+1, id)
 	if err != nil {
 		log.Println(err)
 		return errors.New("スコアの保存に失敗しました。")
